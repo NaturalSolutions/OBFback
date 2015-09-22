@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Observations feature.
+ */
+
+include_once 'observations.features.inc';
