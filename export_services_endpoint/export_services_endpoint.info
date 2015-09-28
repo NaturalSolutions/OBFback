@@ -1,0 +1,12 @@
+name = export_services_endpoint
+description = export services 3 endpoint
+core = 7.x
+package = custom
+version = 7.x-1.0-beta1
+project = export_services_endpoint
+dependencies[] = ctools
+dependencies[] = services
+features[ctools][] = services:services:3
+features[features_api][] = api:2
+features[services_endpoint][] = user_mobile
+project path = sites/all/modules/custom

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the export_services_endpoint feature.
+ */
+
+include_once 'export_services_endpoint.features.inc';
