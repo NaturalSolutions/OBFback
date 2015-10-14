@@ -9,6 +9,6 @@ $plugin = array(
   'description' => t('Export the observation content type.'),
   'class' => 'ObservationsResource__1_0',
   //@todo: authentification
-  // 'authentication_types' => TRUE,
-  // 'authentication_optional' => TRUE,
+   'authentication_types' => TRUE,
+   'authentication_optional' => TRUE
 );

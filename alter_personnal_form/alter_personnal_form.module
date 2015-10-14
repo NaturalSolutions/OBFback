@@ -6,8 +6,12 @@ function alter_personnal_form_mail_alter(&$message) {
     // dpm($message['params']);
     $deepLink = '<a href="obfmobile://home">Open my app</a>';
     $parametres = $message['params'];
-    if (is_array($message['body'])) {
+    $idmail = $message['id'];
+    //mailkeys ?? user_registrationpassword_registration
+    if($idmail === 'user_registrationpassword_register'){
+        if (is_array($message['body'])) {
          $message['body'][] = $deepLink;
+
         // foreach ($parametres as $key => $value) {
         //     dpm($key);
         //     if($key === 'recipient'){
@@ -28,4 +32,6 @@ function alter_personnal_form_mail_alter(&$message) {
         // Some modules use the body as a string, erroneously.
         $message['body'] .= $deepLink;
     }
+    }
+
 }
