@@ -1,0 +1,17 @@
+name = obfuser
+description = user with field last name, first name and newsletter
+core = 7.x
+package = custom
+version = 7.x-1.0
+dependencies[] = text
+features[features_api][] = api:2
+features[field_base][] = field_first_name
+features[field_base][] = field_last_name
+features[field_base][] = field_newsletter
+features[field_instance][] = user-user-field_first_name
+features[field_instance][] = user-user-field_last_name
+features[field_instance][] = user-user-field_newsletter
+features_exclude[dependencies][features] = features
+features_exclude[dependencies][list] = list
+features_exclude[dependencies][options] = options
+project path = sites/all/modules/custom
