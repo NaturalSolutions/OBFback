@@ -21,6 +21,19 @@ function observations_default_services_endpoint() {
   );
   $endpoint->server_settings = array();
   $endpoint->resources = array(
+    'node' => array(
+      'operations' => array(
+        'retrieve' => array(
+          'enabled' => '1',
+        ),
+        'create' => array(
+          'enabled' => '1',
+        ),
+        'index' => array(
+          'enabled' => '1',
+        ),
+      ),
+    ),
     'obfmobile_user' => array(
       'operations' => array(
         'create' => array(
