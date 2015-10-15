@@ -34,7 +34,7 @@ function observations_field_default_field_instances() {
     'entity_type' => 'node',
     'field_name' => 'field_observation_code_dept',
     'label' => 'Observation_code_departement',
-    'required' => 0,
+    'required' => 1,
     'settings' => array(
       'text_processing' => 0,
       'user_register_form' => FALSE,
@@ -79,7 +79,7 @@ function observations_field_default_field_instances() {
     'entity_type' => 'node',
     'field_name' => 'field_observation_id_mission',
     'label' => 'Observation_id_mission',
-    'required' => 0,
+    'required' => 1,
     'settings' => array(
       'max' => '',
       'min' => '',
@@ -255,7 +255,7 @@ function observations_field_default_field_instances() {
     'entity_type' => 'node',
     'field_name' => 'field_observation_timestamp',
     'label' => 'Observation_timestamp',
-    'required' => 0,
+    'required' => 1,
     'settings' => array(
       'max' => '',
       'min' => '',

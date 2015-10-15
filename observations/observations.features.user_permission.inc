@@ -14,7 +14,6 @@ function observations_user_default_permissions() {
   $permissions['create observation content'] = array(
     'name' => 'create observation content',
     'roles' => array(
-      'anonymous user' => 'anonymous user',
       'authenticated user' => 'authenticated user',
     ),
     'module' => 'node',

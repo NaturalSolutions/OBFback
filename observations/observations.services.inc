@@ -33,6 +33,16 @@ function observations_default_services_endpoint() {
           'enabled' => '1',
         ),
       ),
+      'relationships' => array(
+        'files' => array(
+          'enabled' => '1',
+        ),
+      ),
+      'targeted_actions' => array(
+        'attach_file' => array(
+          'enabled' => '1',
+        ),
+      ),
     ),
     'obfmobile_user' => array(
       'operations' => array(
@@ -41,7 +51,22 @@ function observations_default_services_endpoint() {
         ),
       ),
     ),
+    'system' => array(
+      'actions' => array(
+        'connect' => array(
+          'enabled' => '1',
+        ),
+      ),
+    ),
     'user' => array(
+      'operations' => array(
+        'retrieve' => array(
+          'enabled' => '1',
+        ),
+        'update' => array(
+          'enabled' => '1',
+        ),
+      ),
       'actions' => array(
         'login' => array(
           'enabled' => '1',
