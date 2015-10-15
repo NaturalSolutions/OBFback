@@ -1,0 +1,9 @@
+name = "obfmobile services"
+description = "obfmobile extends services"
+package = obfmobile
+core = 7.x
+dependencies[] = services
+dependencies[] = rest_server
+
+
+

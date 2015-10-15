@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * Implementation of hook_services_resources()
+ */
+function obfmobile_services_resources() {
+  return array(
+    'obfmobile_user' => array(
+      'operations' => array(
+        'create' => array(
+          'help' => 'Create an obfmobile user',
+          'callback' => '_obfmobile_user_resource_create',
+          //'file' => array('type' => 'inc', 'module' => 'custom_services_user_resource', 'name' => 'custom_services_user_resource'),
+          'access callback' => '_user_resource_access',
+          'access arguments' => array('create'),
+          'access arguments append' => FALSE,
+          'args' => array(
+            array(
+              'name' => 'account',
+              'type' => 'array',
+              'description' => 'The user object',
+              'source' => 'data',
+              'optional' => FALSE,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Create a new user.
+ *
+ * This function uses drupal_form_submit() and as such expects all input to match
+ * the submitting form in question.
+ *
+ * @param $account
+ *   A object containing account information. The $account object should
+ *   contain, at minimum, the following properties:
+ *     - name (user name)
+ *     - mail (email address)
+ *     - pass (plain text unencrypted password)
+ *
+ *   These properties can be passed but are optional
+ *     - status (0 for blocked, otherwise will be active by default)
+ *     - notify (1 to notify user of new account, will not notify by default)
+ *
+ *  Roles can be passed in a roles property which is an associative
+ *  array formatted with '<role id>' => '<role id>', not including
+ *  the authenticated user role, which is given by default.
+ *
+ * @return
+ *   The user object of the newly created user.
+ */
+function _obfmobile_user_resource_create($account) {
+  $_account = $account;
+  // Adds backwards compatability with regression fixed in #1083242
+  $account = _services_arg_value($account, 'account');
+//var_dump($_account);
+//var_dump($account);
+  // Load the required includes for saving profile information
+  // with drupal_form_submit().
+  module_load_include('inc', 'user', 'user.pages');
+
+  // Register a new user.
+  $form_state['values'] = $account;
+
+  // Determine the password(s). Passwords may not be available as this callback
+  // is used for registration as well.
+  $pass1 = '';
+  $pass2 = '';
+  if (isset($account['pass'])) {
+    // For legacy usage, passwords come in as a single string. To match the
+    // actual form state value keys used by Drupal, we also can collect two
+    // passwords via an array.
+    if (is_array($account['pass'])) {
+      $pass1 = $account['pass']['pass1'];
+      $pass2 = $account['pass']['pass2'];
+    }
+    else {
+      $pass1 = $account['pass'];
+      $pass2 = $account['pass'];
+    }
+  }
+  $form_state['values']['pass'] = array(
+    'pass1' => $pass1,
+    'pass2' => $pass2
+  );
+  // Set the form state op.
+  $form_state['values']['op'] = variable_get('services_user_create_button_resource_create', t('Create new account'));
+
+  // execute the register form
+  $form_state['programmed_bypass_access_check'] = FALSE;
+  drupal_form_submit('user_register_form', $form_state);
+  // find and store the new user into the form_state
+  if(isset($form_state['values']['uid'])) {
+    $form_state['user'] = user_load($form_state['values']['uid']);
+
+
+  }
+
+  // Error if needed.
+  if ($errors = form_get_errors()) {
+    return services_error(implode(" ", $errors), 406, array('form_errors' => $errors));
+  }
+  else {
+    $user = array('uid' => $form_state['user']->uid);
+    //retrieve fisrtname and lastname
+    unset($_account['name']);
+    unset($_account['mail']);
+    unset($_account['pass']);
+    unset($_account['pass2']);
+
+    _user_resource_update($user['uid'], $_account);
+
+    if ($uri = services_resource_uri(array('user', $user['uid']))) {
+      $user['uri'] = $uri;
+    }
+    _user_resource_update_services_user($user['uid'], time());
+    return $user;
+  }
+}
