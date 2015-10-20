@@ -10,7 +10,7 @@
 function observations_field_default_field_instances() {
   $field_instances = array();
 
-  // Exported field_instance: 'node-observation-field_observation_code_dept'
+  // Exported field_instance: 'node-observation-field_observation_code_dept'.
   $field_instances['node-observation-field_observation_code_dept'] = array(
     'bundle' => 'observation',
     'default_value' => NULL,
@@ -50,7 +50,7 @@ function observations_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-observation-field_observation_id_mission'
+  // Exported field_instance: 'node-observation-field_observation_id_mission'.
   $field_instances['node-observation-field_observation_id_mission'] = array(
     'bundle' => 'observation',
     'default_value' => NULL,
@@ -96,7 +96,7 @@ function observations_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-observation-field_observation_image'
+  // Exported field_instance: 'node-observation-field_observation_image'.
   $field_instances['node-observation-field_observation_image'] = array(
     'bundle' => 'observation',
     'deleted' => 0,
@@ -146,7 +146,7 @@ function observations_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-observation-field_observation_name_mission'
+  // Exported field_instance: 'node-observation-field_observation_name_mission'.
   $field_instances['node-observation-field_observation_name_mission'] = array(
     'bundle' => 'observation',
     'default_value' => NULL,
@@ -186,7 +186,7 @@ function observations_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-observation-field_observation_note'
+  // Exported field_instance: 'node-observation-field_observation_note'.
   $field_instances['node-observation-field_observation_note'] = array(
     'bundle' => 'observation',
     'default_value' => NULL,
@@ -226,7 +226,7 @@ function observations_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-observation-field_observation_timestamp'
+  // Exported field_instance: 'node-observation-field_observation_timestamp'.
   $field_instances['node-observation-field_observation_timestamp'] = array(
     'bundle' => 'observation',
     'default_value' => NULL,

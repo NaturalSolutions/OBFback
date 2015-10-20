@@ -10,7 +10,7 @@
 function observations_field_default_field_bases() {
   $field_bases = array();
 
-  // Exported field_base: 'field_observation_code_dept'
+  // Exported field_base: 'field_observation_code_dept'.
   $field_bases['field_observation_code_dept'] = array(
     'active' => 1,
     'cardinality' => 1,
@@ -31,7 +31,7 @@ function observations_field_default_field_bases() {
     'type' => 'text',
   );
 
-  // Exported field_base: 'field_observation_id_mission'
+  // Exported field_base: 'field_observation_id_mission'.
   $field_bases['field_observation_id_mission'] = array(
     'active' => 1,
     'cardinality' => 1,
@@ -46,7 +46,7 @@ function observations_field_default_field_bases() {
     'type' => 'number_integer',
   );
 
-  // Exported field_base: 'field_observation_image'
+  // Exported field_base: 'field_observation_image'.
   $field_bases['field_observation_image'] = array(
     'active' => 1,
     'cardinality' => 3,
@@ -68,7 +68,7 @@ function observations_field_default_field_bases() {
     'type' => 'image',
   );
 
-  // Exported field_base: 'field_observation_name_mission'
+  // Exported field_base: 'field_observation_name_mission'.
   $field_bases['field_observation_name_mission'] = array(
     'active' => 1,
     'cardinality' => 1,
@@ -89,7 +89,7 @@ function observations_field_default_field_bases() {
     'type' => 'text',
   );
 
-  // Exported field_base: 'field_observation_note'
+  // Exported field_base: 'field_observation_note'.
   $field_bases['field_observation_note'] = array(
     'active' => 1,
     'cardinality' => 1,
@@ -110,7 +110,7 @@ function observations_field_default_field_bases() {
     'type' => 'text',
   );
 
-  // Exported field_base: 'field_observation_timestamp'
+  // Exported field_base: 'field_observation_timestamp'.
   $field_bases['field_observation_timestamp'] = array(
     'active' => 1,
     'cardinality' => 1,

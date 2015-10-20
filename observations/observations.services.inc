@@ -68,6 +68,9 @@ function observations_default_services_endpoint() {
         ),
       ),
       'actions' => array(
+        'logintoboggan' => array(
+          'enabled' => '1',
+        ),
         'login' => array(
           'enabled' => '1',
           'settings' => array(
