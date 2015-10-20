@@ -96,8 +96,6 @@ function _obfmobile_user_resource_create($account) {
   // find and store the new user into the form_state
   if(isset($form_state['values']['uid'])) {
     $form_state['user'] = user_load($form_state['values']['uid']);
-
-
   }
 
   // Error if needed.
@@ -106,18 +104,20 @@ function _obfmobile_user_resource_create($account) {
   }
   else {
     $user = array('uid' => $form_state['user']->uid);
-    //retrieve fisrtname and lastname
+
+    // need to update user to add fisrtname and lastname
     unset($_account['name']);
     unset($_account['mail']);
     unset($_account['pass']);
     unset($_account['pass2']);
-
     _user_resource_update($user['uid'], $_account);
+
 
     if ($uri = services_resource_uri(array('user', $user['uid']))) {
       $user['uri'] = $uri;
     }
     _user_resource_update_services_user($user['uid'], time());
+
     return $user;
   }
 }
