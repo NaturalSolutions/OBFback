@@ -50,6 +50,11 @@ function observations_default_services_endpoint() {
           'enabled' => '1',
         ),
       ),
+      'actions' => array(
+        'login' => array(
+          'enabled' => '1',
+        ),
+      ),
     ),
     'system' => array(
       'actions' => array(
