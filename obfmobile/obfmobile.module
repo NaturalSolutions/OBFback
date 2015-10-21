@@ -10,7 +10,6 @@ function obfmobile_services_resources() {
         'create' => array(
           'help' => 'Create an obfmobile user',
           'callback' => '_obfmobile_user_resource_create',
-          //'file' => array('type' => 'inc', 'module' => 'custom_services_user_resource', 'name' => 'custom_services_user_resource'),
           'access callback' => '_user_resource_access',
           'access arguments' => array('create'),
           'access arguments append' => FALSE,
@@ -23,6 +22,30 @@ function obfmobile_services_resources() {
               'optional' => FALSE,
             ),
           ),
+        ),
+      ),
+      'actions' => array(
+        'login' => array(
+          'help' => 'Login a user for a new session and returns the user\'s observations',
+          'callback' => '_obfmobile_user_resource_login',
+          'args' => array(
+            array(
+              'name' => 'username',
+              'type' => 'string',
+              'description' => 'A valid username',
+              'source' => array('data' => 'username'),
+              'optional' => FALSE,
+            ),
+            array(
+              'name' => 'password',
+              'type' => 'string',
+              'description' => 'A valid password',
+              'source' => array('data' => 'password'),
+              'optional' => FALSE,
+            ),
+          ),
+          'access callback' => 'services_access_menu',
+          'file' => array('type' => 'inc', 'module' => 'services', 'name' => 'resources/user_resource'),
         ),
       ),
     ),
@@ -120,4 +143,88 @@ function _obfmobile_user_resource_create($account) {
 
     return $user;
   }
+}
+
+/**
+ * Login a user using the specified credentials.
+ *
+ * Note this will transfer a plaintext password.
+ *
+ * @param $username
+ *   Username to be logged in.
+ * @param $password
+ *   Password, must be plain text and not hashed.
+ *
+ * @return
+ *   A valid session object.
+ */
+function _obfmobile_user_resource_login($username, $password) {
+  global $user;
+
+  if ($user->uid) {
+    // user is already logged in
+    return services_error(t('Already logged in as @user.', array('@user' => $user->name)), 406);
+  }
+
+  // Check if account is active.
+  if (user_is_blocked($username)) {
+    return services_error(t('The username %name has not been activated or is blocked.', array('%name' => $username)), 403);
+  }
+
+  // Emulate drupal native flood control: check for flood condition.
+  $flood_state = array();
+  if (variable_get('services_flood_control_enabled', TRUE)) {
+    $flood_state = _user_resource_flood_control_precheck($username);
+  }
+
+  // Only authenticate if a flood condition was not detected.
+  if (empty($flood_state['flood_control_triggered'])) {
+    $uid = user_authenticate($username, $password);
+  }
+  else {
+    $uid = FALSE;
+  }
+
+  // Emulate drupal native flood control: register flood event, and throw error
+  // if a flood condition was previously detected
+  if (variable_get('services_flood_control_enabled', TRUE)) {
+    $flood_state['uid'] = $uid;
+    _user_resource_flood_control_postcheck($flood_state);
+  }
+
+  if ($uid) {
+    $user = user_load($uid);
+    if ($user->uid) {
+      user_login_finalize();
+
+      $return = new stdClass();
+      $return->sessid = session_id();
+      $return->session_name = session_name();
+      $return->token = drupal_get_token('services');
+
+      $account = clone $user;
+
+      services_remove_user_data($account);
+
+      $return->user = $account;
+
+      $return->count_obs = obs_by_uid($user->uid);
+      
+      return $return;
+    }
+  }
+  watchdog('user', 'Invalid login attempt for %username.', array('%username' => $username));
+  return services_error(t('Wrong username or password.'), 401);
+}
+
+function obs_by_uid($uid){
+  //SELECT count(*) FROM `noe-obf`.node where uid=86 and type='observation';
+    $obsByUid = db_select('node', 'n')
+    ->fields('n')
+    ->condition('uid', $uid,'=')
+    ->condition('type','observation','=')
+    ->execute();
+
+    $count_obs = $obsByUid->rowCount();
+  return $count_obs;
 }
