@@ -48,5 +48,5 @@ function logintoboggan_services_login($username_email, $password){
   
   //Pass through to the existing services callback
   module_load_include('inc', 'services', 'resources/user_resource');
-  return _user_resource_login($username, $password);
+  return _obfmobile_user_resource_login($username, $password);
 }
