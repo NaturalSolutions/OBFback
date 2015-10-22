@@ -10,7 +10,7 @@
 function obfuser_field_default_field_bases() {
   $field_bases = array();
 
-  // Exported field_base: 'field_first_name'
+  // Exported field_base: 'field_first_name'.
   $field_bases['field_first_name'] = array(
     'active' => 1,
     'cardinality' => 1,
@@ -31,7 +31,7 @@ function obfuser_field_default_field_bases() {
     'type' => 'text',
   );
 
-  // Exported field_base: 'field_last_name'
+  // Exported field_base: 'field_last_name'.
   $field_bases['field_last_name'] = array(
     'active' => 1,
     'cardinality' => 1,
@@ -52,7 +52,7 @@ function obfuser_field_default_field_bases() {
     'type' => 'text',
   );
 
-  // Exported field_base: 'field_newsletter'
+  // Exported field_base: 'field_newsletter'.
   $field_bases['field_newsletter'] = array(
     'active' => 1,
     'cardinality' => 1,
@@ -75,6 +75,21 @@ function obfuser_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'list_boolean',
+  );
+
+  // Exported field_base: 'field_time_forest'.
+  $field_bases['field_time_forest'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_time_forest',
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'number',
+    'settings' => array(),
+    'translatable' => 0,
+    'type' => 'number_integer',
   );
 
   return $field_bases;

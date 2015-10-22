@@ -10,7 +10,7 @@
 function obfuser_field_default_field_instances() {
   $field_instances = array();
 
-  // Exported field_instance: 'user-user-field_first_name'
+  // Exported field_instance: 'user-user-field_first_name'.
   $field_instances['user-user-field_first_name'] = array(
     'bundle' => 'user',
     'default_value' => NULL,
@@ -44,7 +44,7 @@ function obfuser_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'user-user-field_last_name'
+  // Exported field_instance: 'user-user-field_last_name'.
   $field_instances['user-user-field_last_name'] = array(
     'bundle' => 'user',
     'default_value' => NULL,
@@ -78,7 +78,7 @@ function obfuser_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'user-user-field_newsletter'
+  // Exported field_instance: 'user-user-field_newsletter'.
   $field_instances['user-user-field_newsletter'] = array(
     'bundle' => 'user',
     'default_value' => array(
@@ -115,13 +115,55 @@ function obfuser_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'user-user-field_time_forest'.
+  $field_instances['user-user-field_time_forest'] = array(
+    'bundle' => 'user',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Temps passé en forêt (type entier)',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'number',
+        'settings' => array(
+          'decimal_separator' => '.',
+          'prefix_suffix' => TRUE,
+          'scale' => 0,
+          'thousand_separator' => '',
+        ),
+        'type' => 'number_integer',
+        'weight' => 4,
+      ),
+    ),
+    'entity_type' => 'user',
+    'field_name' => 'field_time_forest',
+    'label' => 'time_forest',
+    'required' => 0,
+    'settings' => array(
+      'max' => '',
+      'min' => '',
+      'prefix' => '',
+      'suffix' => '',
+      'user_register_form' => 0,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'number',
+      'settings' => array(),
+      'type' => 'number',
+      'weight' => 7,
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('Prénom de l\'utilisateur');
   t('Recevoir la newsletter');
+  t('Temps passé en forêt (type entier)');
   t('newsletter');
   t('nom');
   t('prénom');
+  t('time_forest');
 
   return $field_instances;
 }
