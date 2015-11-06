@@ -208,15 +208,11 @@ function _obfmobile_user_resource_login($username, $password) {
 
       $return->user = $account;
 
-<<<<<<< HEAD
-      $return->count_obs = obs_by_uid($user->uid);
-
-      $return->time_forest = tmps_foret_by_uid($user->uid);
-=======
       $return->count_obs = count_obs_by_uid($user->uid);
 
+      $return->time_forest = tmps_foret_by_uid($user->uid);
+
       $return->obs = obs_by_uid($user->uid);
->>>>>>> return mission id
       
       return $return;
     }
@@ -235,7 +231,6 @@ function count_obs_by_uid($uid){
     $count_obs = $obsByUid->rowCount();
   return $count_obs;
 }
-<<<<<<< HEAD
 
 function tmps_foret_by_uid($uid){
   //field_time_forest_value
@@ -247,7 +242,8 @@ function tmps_foret_by_uid($uid){
     $tmpsByUid = $query -> fetchField();
   
   return $tmpsByUid;
-=======
+}
+
 function obs_by_uid($uid){
     $query = db_select('node', 'n');
     $query->fields('n', array('title'));
@@ -259,5 +255,4 @@ function obs_by_uid($uid){
     $result = $query->execute();
     $record = db_query($result)->fetchAll();
     return $record;
->>>>>>> return mission id
 }
