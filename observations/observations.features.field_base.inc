@@ -10,6 +10,32 @@
 function observations_field_default_field_bases() {
   $field_bases = array();
 
+  // Exported field_base: 'field_cd_nom'.
+  $field_bases['field_cd_nom'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_cd_nom',
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'taxon',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
   // Exported field_base: 'field_observation_code_dept'.
   $field_bases['field_observation_code_dept'] = array(
     'active' => 1,

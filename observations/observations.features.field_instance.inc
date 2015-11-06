@@ -10,6 +10,46 @@
 function observations_field_default_field_instances() {
   $field_instances = array();
 
+  // Exported field_instance: 'node-observation-field_cd_nom'.
+  $field_instances['node-observation-field_cd_nom'] = array(
+    'bundle' => 'observation',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 9,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_cd_nom',
+    'label' => 'Cd_nom',
+    'required' => 1,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'taxonomy',
+      'settings' => array(
+        'autocomplete_path' => 'taxonomy/autocomplete',
+        'size' => 60,
+      ),
+      'type' => 'taxonomy_autocomplete',
+      'weight' => 5,
+    ),
+  );
+
   // Exported field_instance: 'node-observation-field_observation_code_dept'.
   $field_instances['node-observation-field_observation_code_dept'] = array(
     'bundle' => 'observation',
@@ -274,6 +314,7 @@ function observations_field_default_field_instances() {
 
   // Translatables
   // Included for use with string extractors like potx.
+  t('Cd_nom');
   t('Code département');
   t('Id de la mission pour lequel a été réalisé l\'observation.');
   t('Nom de la mission pour lequel à été faite l\'observation');
