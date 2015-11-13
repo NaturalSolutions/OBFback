@@ -220,7 +220,7 @@ function _obfmobile_user_resource_login($username, $password) {
 
       // $return->time_forest = tmps_foret_by_uid($user->uid);
 
-      // $return->obs = obs_by_uid($user->uid);
+      $return->obs = obs_by_uid($user->uid);
       
       return $return;
     }
@@ -258,10 +258,10 @@ function obs_by_uid($uid){
     $query->fields('n', array('title'));
     $query->condition('n.uid', $uid,'=');
     $query->condition('n.type','observation','=');
-    // $query->join('field_data_field_observation_id_mission', 'm', 'n.nid = m.entity_id');
-    // $query->fields('m', array('field_observation_id_mission_value'));
-    // $query->join('field_data_field_observation_code_dept', 'dept', 'n.nid = dept.entity_id');
-    // $query->fields('dept', array('field_observation_code_dept_value'));
+    $query->join('field_data_field_observation_id_mission', 'm', 'n.nid = m.entity_id');
+    $query->fields('m', array('field_observation_id_mission_value'));
+    $query->join('field_data_field_observation_code_dept', 'dept', 'n.nid = dept.entity_id');
+    $query->fields('dept', array('field_observation_code_dept_value'));
     $query->join('field_data_field_observation_image', 'foi', 'n.nid = foi.entity_id');
     $query->fields('foi', array('field_observation_image_fid','entity_id'));
 
@@ -270,9 +270,18 @@ function obs_by_uid($uid){
 
     foreach ($record as $key => $item) {
       $files = _file_resource_retrieve($item->field_observation_image_fid, true, false);
-      $url_file[$key][$item->entity_id] += $files->uri_full;
+      $url_files[$item->entity_id]['photos'][$key] = $files->uri_full;
+
+      $elem[$item->entity_id][$key] = $item;
+      $obj_merged = (object)array_merge_recursive((array)$elem[$item->entity_id][$key],(array)$url_files[$item->entity_id]);
+      $obs[$key] = $obj_merged ;
+
+      unset($obs[$key]->entity_id);
+      unset($obs[$key]->field_observation_image_fid);
+      $obs[$key]->dept = $obs[$key]->field_observation_code_dept_value;
+      unset($obs[$key]->field_observation_code_dept_value);
+      $obs[$key]->mission = $obs[$key]->field_observation_id_mission_value;
+      unset($obs[$key]->field_observation_id_mission_value);
     }
-    // $array_merge = array_merge_recursive($url_file, $url_file2);
-    var_dump($url_file);
-    // return $A_files;
+    return $obs;
 }
