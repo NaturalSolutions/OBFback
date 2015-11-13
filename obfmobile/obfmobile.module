@@ -161,6 +161,14 @@ function _obfmobile_user_resource_create($account) {
 function _obfmobile_user_resource_login($username, $password) {
   global $user;
 
+   //If an email was used, get the username from that
+  if (valid_email_address($username)){
+    $account = user_load_by_mail($username);
+    $username = $account->name;
+  } else {
+    $username = $username;
+  }
+
   if ($user->uid) {
     // user is already logged in
     return services_error(t('Already logged in as @user.', array('@user' => $user->name)), 406);
@@ -210,9 +218,9 @@ function _obfmobile_user_resource_login($username, $password) {
 
       $return->count_obs = count_obs_by_uid($user->uid);
 
-      $return->time_forest = tmps_foret_by_uid($user->uid);
+      // $return->time_forest = tmps_foret_by_uid($user->uid);
 
-      $return->obs = obs_by_uid($user->uid);
+      // $return->obs = obs_by_uid($user->uid);
       
       return $return;
     }
@@ -232,27 +240,39 @@ function count_obs_by_uid($uid){
   return $count_obs;
 }
 
-function tmps_foret_by_uid($uid){
-  //field_time_forest_value
-    $query = db_select('field_data_field_time_forest', 'tf')
-    ->fields('tf',array('field_time_forest_value'))
-    ->condition('entity_id', $uid,'=')
-    ->execute();
+// function tmps_foret_by_uid($uid){
+//   //field_time_forest_value
+//     $query = db_select('field_data_field_time_forest', 'tf')
+//     ->fields('tf',array('field_time_forest_value'))
+//     ->condition('entity_id', $uid,'=')
+//     ->execute();
 
-    $tmpsByUid = $query -> fetchField();
+//     $tmpsByUid = $query -> fetchField();
   
-  return $tmpsByUid;
-}
+//   return $tmpsByUid;
+// }
 
 function obs_by_uid($uid){
+
     $query = db_select('node', 'n');
     $query->fields('n', array('title'));
     $query->condition('n.uid', $uid,'=');
     $query->condition('n.type','observation','=');
-    $query->join('field_data_field_observation_id_mission', 'm', 'n.nid = m.entity_id');
-    $query->fields('m', array('field_observation_id_mission_value'));
+    // $query->join('field_data_field_observation_id_mission', 'm', 'n.nid = m.entity_id');
+    // $query->fields('m', array('field_observation_id_mission_value'));
+    // $query->join('field_data_field_observation_code_dept', 'dept', 'n.nid = dept.entity_id');
+    // $query->fields('dept', array('field_observation_code_dept_value'));
+    $query->join('field_data_field_observation_image', 'foi', 'n.nid = foi.entity_id');
+    $query->fields('foi', array('field_observation_image_fid','entity_id'));
 
     $result = $query->execute();
     $record = db_query($result)->fetchAll();
-    return $record;
+
+    foreach ($record as $key => $item) {
+      $files = _file_resource_retrieve($item->field_observation_image_fid, true, false);
+      $url_file[$key][$item->entity_id] += $files->uri_full;
+    }
+    // $array_merge = array_merge_recursive($url_file, $url_file2);
+    var_dump($url_file);
+    // return $A_files;
 }
