@@ -34,7 +34,7 @@ function observations_field_default_field_instances() {
     'entity_type' => 'node',
     'field_name' => 'field_cd_nom',
     'label' => 'Cd_nom',
-    'required' => 1,
+    'required' => 0,
     'settings' => array(
       'user_register_form' => FALSE,
     ),
@@ -47,6 +47,46 @@ function observations_field_default_field_instances() {
       ),
       'type' => 'taxonomy_autocomplete',
       'weight' => 5,
+    ),
+  );
+
+  // Exported field_instance: 'node-observation-field_lat_long'.
+  $field_instances['node-observation-field_lat_long'] = array(
+    'bundle' => 'observation',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Latitude longitude',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 10,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_lat_long',
+    'label' => 'Lat/Long',
+    'required' => 0,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 6,
     ),
   );
 
@@ -317,6 +357,8 @@ function observations_field_default_field_instances() {
   t('Cd_nom');
   t('Code département');
   t('Id de la mission pour lequel a été réalisé l\'observation.');
+  t('Lat/Long');
+  t('Latitude longitude');
   t('Nom de la mission pour lequel à été faite l\'observation');
   t('Note');
   t('Observation_code_departement');
