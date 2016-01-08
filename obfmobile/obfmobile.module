@@ -124,7 +124,7 @@ function _obfmobile_user_resource_create($account) {
   // Error if needed.
   if ($errors = form_get_errors()) {
     if(array_key_exists('mail',$errors)){
-      return services_error('mail_exists', 406, 'mail_exists');
+      return services_error('email_exists', 406, 'email_exists');
     }else{
       return services_error(implode(" ", $errors), 406, array('form_errors' => $errors));
     }
@@ -244,17 +244,17 @@ function count_obs_by_uid($uid){
   return $count_obs;
 }
 
-// function tmps_foret_by_uid($uid){
-//   //field_time_forest_value
-//     $query = db_select('field_data_field_time_forest', 'tf')
-//     ->fields('tf',array('field_time_forest_value'))
-//     ->condition('entity_id', $uid,'=')
-//     ->execute();
+function tmps_foret_by_uid($uid){
+  //field_time_forest_value
+    $query = db_select('field_data_field_time_forest', 'tf')
+    ->fields('tf',array('field_time_forest_value'))
+    ->condition('entity_id', $uid,'=')
+    ->execute();
 
-//     $tmpsByUid = $query -> fetchField();
+    $tmpsByUid = $query -> fetchField();
   
-//   return $tmpsByUid;
-// }
+  return $tmpsByUid;
+}
 
 function obs_by_uid($uid){
 
@@ -273,6 +273,7 @@ function obs_by_uid($uid){
     $record = db_query($result)->fetchAll();
 
     foreach ($record as $key => $item) {
+      $obs;
       $files = _file_resource_retrieve($item->field_observation_image_fid, true, false);
       $url_files[$item->entity_id]['photos'][$key] = $files->uri_full;
 
