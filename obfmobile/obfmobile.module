@@ -61,7 +61,7 @@ function obfmobile_services_resources() {
               'optional' => FALSE,
               'source' => array('path' => 0),
               'type' => 'int',
-              'description' => 'The nid of the node whose files we are getting',
+              'description' => 'The uid of the user whose observations we are getting',
             ),
             array(
               'name' => 'file_contents',
