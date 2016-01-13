@@ -33,11 +33,6 @@ function observations_default_services_endpoint() {
           'enabled' => '1',
         ),
       ),
-      'relationships' => array(
-        'files' => array(
-          'enabled' => '1',
-        ),
-      ),
       'targeted_actions' => array(
         'attach_file' => array(
           'enabled' => '1',
@@ -52,6 +47,11 @@ function observations_default_services_endpoint() {
       ),
       'actions' => array(
         'login' => array(
+          'enabled' => '1',
+        ),
+      ),
+      'relationships' => array(
+        'obs_by_uid' => array(
           'enabled' => '1',
         ),
       ),
@@ -71,11 +71,11 @@ function observations_default_services_endpoint() {
         'update' => array(
           'enabled' => '1',
         ),
-      ),
-      'actions' => array(
-        'logintoboggan' => array(
+        'index' => array(
           'enabled' => '1',
         ),
+      ),
+      'actions' => array(
         'login' => array(
           'enabled' => '1',
           'settings' => array(
