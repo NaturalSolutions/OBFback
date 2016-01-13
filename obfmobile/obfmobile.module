@@ -48,6 +48,40 @@ function obfmobile_services_resources() {
           'file' => array('type' => 'inc', 'module' => 'services', 'name' => 'resources/user_resource'),
         ),
       ),
+      'relationships' => array(
+        'obs_by_uid' => array(
+          'help'   => t('Observations by user.'),
+          'access callback' => '_user_resource_access',
+          'access arguments' => array('view'),
+          'access arguments append' => TRUE,
+          'callback' => 'obs_by_uid',
+          'args'     => array(
+            array(
+              'name' => 'uid',
+              'optional' => FALSE,
+              'source' => array('path' => 0),
+              'type' => 'int',
+              'description' => 'The nid of the node whose files we are getting',
+            ),
+            array(
+              'name' => 'file_contents',
+              'type' => 'int',
+              'description'  => t('To return file contents or not.'),
+              'source' => array('path' => 2),
+              'optional' => TRUE,
+              'default value' => TRUE,
+            ),
+            array(
+              'name'         => 'image_styles',
+              'type'         => 'int',
+              'description'  => t('To return image styles or not.'),
+              'source'       => array('path' => 3),
+              'optional'     => TRUE,
+              'default value' => FALSE,
+            ),
+          ),
+        ),
+      ),
     ),
   );
 }
@@ -222,7 +256,7 @@ function _obfmobile_user_resource_login($username, $password) {
 
       $return->count_obs = count_obs_by_uid($user->uid);
 
-      // $return->time_forest = tmps_foret_by_uid($user->uid);
+      $return->time_forest = tmps_foret_by_uid($user->uid);
 
       $return->obs = obs_by_uid($user->uid);
       
@@ -275,14 +309,14 @@ function obs_by_uid($uid){
     foreach ($record as $key => $item) {
       $obs;
       $files = _file_resource_retrieve($item->field_observation_image_fid, true, false);
-      $url_files[$item->entity_id]['photos'][$key] = $files->uri_full;
+      $url_files[$item->entity_id]['photos'][] = $files->uri_full;
 
       $elem[$item->entity_id][$key] = $item;
       $obj_merged = (object)array_merge_recursive((array)$elem[$item->entity_id][$key],(array)$url_files[$item->entity_id]);
       $obs[$key] = $obj_merged ;
 
-      unset($obs[$key]->entity_id);
       unset($obs[$key]->field_observation_image_fid);
+      unset($obs[$key]->title);
       $obs[$key]->dept = $obs[$key]->field_observation_code_dept_value;
       unset($obs[$key]->field_observation_code_dept_value);
       $obs[$key]->mission = $obs[$key]->field_observation_id_mission_value;
