@@ -300,27 +300,37 @@ function obs_by_uid($uid){
     $query->fields('m', array('field_observation_id_mission_value'));
     $query->join('field_data_field_observation_code_dept', 'dept', 'n.nid = dept.entity_id');
     $query->fields('dept', array('field_observation_code_dept_value'));
+    $query->join('field_data_field_observation_timestamp', 'ot', 'n.nid = ot.entity_id');
+    $query->fields('ot', array('field_observation_timestamp_value'));
     $query->join('field_data_field_observation_image', 'foi', 'n.nid = foi.entity_id');
     $query->fields('foi', array('field_observation_image_fid','entity_id'));
 
     $result = $query->execute();
     $record = db_query($result)->fetchAll();
 
-    foreach ($record as $key => $item) {
-      $obs;
-      $files = _file_resource_retrieve($item->field_observation_image_fid, true, false);
-      $url_files[$item->entity_id]['photos'][] = $files->uri_full;
+    $obs;
+    foreach ($record as $k => $v) {
+      $files = _file_resource_retrieve($v->field_observation_image_fid, true, false);
+      $url_files[$v->entity_id]['photos'][] = $files->uri_full;
 
-      $elem[$item->entity_id][$key] = $item;
-      $obj_merged = (object)array_merge_recursive((array)$elem[$item->entity_id][$key],(array)$url_files[$item->entity_id]);
-      $obs[$key] = $obj_merged ;
+      $elem[$v->entity_id][$key] = $v;
 
-      unset($obs[$key]->field_observation_image_fid);
-      unset($obs[$key]->title);
-      $obs[$key]->dept = $obs[$key]->field_observation_code_dept_value;
-      unset($obs[$key]->field_observation_code_dept_value);
-      $obs[$key]->mission = $obs[$key]->field_observation_id_mission_value;
-      unset($obs[$key]->field_observation_id_mission_value);
+      foreach ($url_files as $key => $value) {
+        if($key === (int) $v->entity_id){
+           $result = (array) $v;
+
+          $obs[$key] = array_merge_recursive($result, $value);
+
+          $obs[$key]['dept'] = $obs[$key]['field_observation_code_dept_value'];
+          $obs[$key]['mission'] = $obs[$key]['field_observation_id_mission_value'];
+          $obs[$key]['timestamp'] = $obs[$key]['field_observation_timestamp_value'];
+          unset($obs[$key]["field_observation_code_dept_value"]);
+          unset($obs[$key]["field_observation_image_fid"]);
+          unset($obs[$key]["field_observation_id_mission_value"]);
+          unset($obs[$key]["field_observation_timestamp_value"]);
+          unset($obs[$key]["title"]);
+        }
+      }
     }
     return $obs;
 }
