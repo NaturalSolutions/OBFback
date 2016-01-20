@@ -4,21 +4,6 @@
 */
 
 /**
- * @see hook_help()
- */
-// function page_redirect_help($path, $arg) {
-//   switch ($path) {
-//     case 'page_redirect':
-//       // Help text for the simple page registered for this path.
-//       return t('This is help text for the redirect page.');
-
-//     case 'admin/help#page_redirect':
-//       // Help text for the admin section, using the module name in the path.
-//       return t("This is help text created in the page redirect's second case.");
-//   }
-// }
-
-/**
  * Implements hook_permission().
  *
  * Since the access to our new custom pages will be granted based on
@@ -78,22 +63,13 @@ function page_redirect_description() {
  * Implements hook_block_info_alter().
  */
 function page_redirect_block_info_alter(&$blocks, $theme, $code_blocks) {
-  // dpm($blocks);
   $blocks['system']['powered-by']['status'] = 0;
-  // // change the visibility to ? page only
-  // $blocks['system']['navigation']['visibility'] = BLOCK_VISIBILITY_LISTED;
-  // $blocks['user']['online']['visibility'] = BLOCK_VISIBILITY_LISTED;
-  // // $blocks['system']['main-menu']['visibility'] = BLOCK_VISIBILITY_LISTED;
-  // $blocks['system']['user-menu']['visibility'] = BLOCK_VISIBILITY_LISTED;
-
-  // $blocks['system']['navigation']['pages'] = '';
 }
 
 /**
  * Hide navbar to page_redirect.
  */
-drupal_add_css('.page-page-redirect #navbar {
+drupal_add_css('.page-page-redirect #navbar, .page-user #navbar {
                   display:none;
                 }'
 , 'inline');
-// drupal_add_js('jQuery(document).ready(function(){window.close();});', 'inline');
