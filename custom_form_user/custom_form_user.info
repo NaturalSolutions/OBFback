@@ -1,0 +1,5 @@
+; Fichier custom_form_user/custom_form_user.info
+name = custom_form_user
+description = Cache certains champs pour les roles non admin dans le formulaire profil de l'utilisateur
+core = 7.x
+package = custom

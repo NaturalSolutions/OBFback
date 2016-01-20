@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * Implements hook_form_alter().
+ */
+function custom_form_user_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'user_profile_form') {
+    // Attach a custom after build handler.
+    $form['#after_build'][] = 'custom_form_user_user_form_after_build';
+  }
+}
+
+/**
+ * An #after_build handler for the user_profile_form.
+ */
+function custom_form_user_user_form_after_build($form, &$form_state) {
+  global $user;
+  // Hide the admin overlay check box from non admins.
+  if (!in_array('admin user', $user->roles)) {
+    $form['overlay_control']['#prefix'] = '<div style="display: none;">';
+    $form['overlay_control']['#suffix'] = '</div>';
+    $form['contact']['#prefix'] = '<div style="display: none;">';
+    $form['contact']['#suffix'] = '</div>';
+    $form['timezone']['#prefix'] = '<div style="display: none;">';
+    $form['timezone']['#suffix'] = '</div>';
+    $form['locale']['#prefix'] = '<div style="display: none;">';
+    $form['locale']['#suffix'] = '</div>';
+    $form['picture']['#prefix'] = '<div style="display: none;">';
+    $form['picture']['#suffix'] = '</div>';
+    $form['field_time_forest']['#prefix'] = '<div style="display: none;">';
+    $form['field_time_forest']['#suffix'] = '</div>';
+    
+  }
+ 
+  return $form;
+}
+
+// function my_submit_handler(&$form, &$form_state) {
+//   $form_state['redirect'] = 'user/'+$user->uid;
+// }
+
