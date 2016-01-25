@@ -313,7 +313,7 @@ function obs_by_uid($uid){
       $files = _file_resource_retrieve($v->field_observation_image_fid, true, false);
       $url_files[$v->entity_id]['photos'][] = $files->uri_full;
 
-      $elem[$v->entity_id][$key] = $v;
+      $elem[$v->entity_id][$k] = $v;
 
       foreach ($url_files as $key => $value) {
         if($key === (int) $v->entity_id){
