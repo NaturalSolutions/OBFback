@@ -23,6 +23,31 @@ function obfmobile_services_resources() {
             ),
           ),
         ),
+
+        'update' => array(
+          'help' => 'Update a user',
+          'callback' => '_obfmobile_user_resource_update',
+          'file' => array('type' => 'inc', 'module' => 'services', 'name' => 'resources/user_resource'),
+          'access callback' => '_user_resource_access',
+          'access arguments' => array('update'),
+          'access arguments append' => TRUE,
+          'args' => array(
+            array(
+              'name' => 'uid',
+              'type' => 'int',
+              'description' => 'Unique identifier for this user',
+              'source' => array('path' => 0),
+              'optional' => FALSE,
+            ),
+            array(
+              'name' => 'data',
+              'type' => 'array',
+              'description' => 'The user object with updated information',
+              'source' => 'data',
+              'optional' => FALSE,
+            ),
+          ),
+        ),
       ),
       'actions' => array(
         'login' => array(
@@ -333,4 +358,26 @@ function obs_by_uid($uid){
       }
     }
     return $obs;
+}
+
+function _obfmobile_user_resource_update($uid, $account){
+  if ($uid) {
+    $serverTf = _get_time_forest($uid);
+    $localTf = $account['field_time_forest']['und'][0]["value"];
+    if($serverTf > $localTf){
+      $account['field_time_forest']['und'][0]["value"] = intval($serverTf) + intval($localTf);
+    }elseif ($serverTf < $localTf) {
+      $account['field_time_forest']['und'][0]["value"] = intval($localTf);
+    }
+
+  return _user_resource_update($uid, $account);
+  }
+}
+
+function _get_time_forest($uid){
+  $user = user_load($uid);
+  if (!empty($user)) {
+    // return services_error(t('There is no user with ID @email.', array('@email' => $email)), 404);
+      return $user->field_time_forest['und'][0]["value"];
+  }
 }
