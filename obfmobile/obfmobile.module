@@ -281,8 +281,6 @@ function _obfmobile_user_resource_login($username, $password) {
 
       $return->count_obs = count_obs_by_uid($user->uid);
 
-      $return->time_forest = tmps_foret_by_uid($user->uid);
-
       $return->obs = obs_by_uid($user->uid);
       
       return $return;
@@ -364,13 +362,9 @@ function _obfmobile_user_resource_update($uid, $account){
   if ($uid) {
     $serverTf = _get_time_forest($uid);
     $localTf = $account['field_time_forest']['und'][0]["value"];
-    if($serverTf > $localTf){
-      $account['field_time_forest']['und'][0]["value"] = intval($serverTf) + intval($localTf);
-    }elseif ($serverTf < $localTf) {
-      $account['field_time_forest']['und'][0]["value"] = intval($localTf);
-    }
+    $account['field_time_forest']['und'][0]["value"] = intval($serverTf) + intval($localTf);
 
-  return _user_resource_update($uid, $account);
+    return _user_resource_update($uid, $account);
   }
 }
 
@@ -381,3 +375,4 @@ function _get_time_forest($uid){
       return $user->field_time_forest['und'][0]["value"];
   }
 }
+
