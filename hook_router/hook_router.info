@@ -1,0 +1,4 @@
+name = "Hook router"
+description = "Redirects user when user come  from browser"
+core = "7.x"
+package = obfmobile
