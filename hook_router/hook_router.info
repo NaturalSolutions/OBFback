@@ -1,4 +1,4 @@
 name = "Hook router"
-description = "Redirects user when user come  from browser"
+description = "Refuse access to user to content when user comes from browser"
 core = "7.x"
 package = obfmobile
