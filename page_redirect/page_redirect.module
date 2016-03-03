@@ -69,7 +69,7 @@ function page_redirect_block_info_alter(&$blocks, $theme, $code_blocks) {
 /**
  * Hide navbar to page_redirect.
  */
-drupal_add_css('.page-page-redirect #navbar, .page-user #navbar {
+drupal_add_css('.page-page-redirect #navbar {
                   display:none;
                 }'
 , 'inline');
