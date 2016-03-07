@@ -1,0 +1,9 @@
+name = "obfmobile observation services"
+description = "obfmobile observation extends services node resource"
+package = obfmobile
+core = 7.x
+dependencies[] = services
+dependencies[] = rest_server
+
+
+
