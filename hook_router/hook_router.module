@@ -1,7 +1,6 @@
 <?php
 function hook_router_menu_get_item_alter(&$router_item, $path, $original_map) {
-  $haveAccess = $original_map[0] === "obfmobileapi" || $original_map[0] === "page_redirect" || $original_map[0] === "user" || $original_map[0] === "app_link";
-  if (user_is_logged_in()  && !($haveAccess)) {
+  if (user_is_logged_in()  && !($original_map[0] === "obfmobileapi" || $original_map[0] === "page_redirect" || $original_map[0] === "user" || $original_map[0] === "app_link")) {
     global $user;
     $account = user_load($user->uid);
     if (in_array('authenticated user', array_values($user->roles)) && !(in_array('administrator', array_values($user->roles) )) ) {
