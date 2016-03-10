@@ -3,4 +3,4 @@ description = create redirect page
 core = 7.x
 package = custom
 dependencies[] = prlp
-dependencies[] = app_link
+dependencies[] = app_link_custom

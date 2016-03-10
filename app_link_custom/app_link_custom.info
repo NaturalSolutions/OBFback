@@ -1,0 +1,15 @@
+name = App Link Custom
+description = Link to a mobile apps via URI Scheme, falling back to an app store if needed.
+core = 7.x
+package = custom
+
+dependencies[] = ctools
+configure = admin/config/search/applinkcustom
+
+;Copy of APP LINK module without intent url for Android
+; Information added by Drupal.org packaging script on 2015-12-17
+;version = "7.x-2.11"
+;core = "7.x"
+;project = "app_link_custom"
+;datestamp = "1450379641"
+
