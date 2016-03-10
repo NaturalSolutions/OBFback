@@ -30,6 +30,11 @@
  * @return {string}
  *   Primary URL that we will attempt to redirect to.
  */
+ app_link_custom.before = function(callback) {
+     setTimeout(function() {
+        callback();
+      }, 3000);
+};
 function app_link_custom (platforms, fallbackUrl) {
   var isRedirectPage = !!location.href.match("app_link_custom_redirect=true");
   // Set variables, allowing before hooks to alter.
