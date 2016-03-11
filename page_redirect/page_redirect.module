@@ -45,15 +45,21 @@ function page_redirect_menu() {
  */
 function page_redirect_description() {
   global $user;
+  $site_name = token_replace('[site:name]');
+
+  if($user->uid === 0){
+    $user->mail = "";
+  }
   return array(
     '#markup' =>
       '<div><img class="img-responsive" src="./sites/all/modules/custom/page_redirect/images/observatoire-de-la-biodiversite-des-forets-01.jpg" alt="logo OBF"/></div>'.
       t('<p class="text-center">
       Congratulation!
-      You can use your new password to log in on the En forêt avec Noé application with the email @user_email.
+      You can use your new password to log in on the @site_name application with your email @user_email.
       </p>',
       array(
-        '@user_email' => $user->mail
+        '@user_email' => $user->mail,
+        '@site_name' => $site_name
       )
     ),
   );
