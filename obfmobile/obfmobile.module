@@ -202,6 +202,9 @@ function _obfmobile_user_resource_create($account) {
     if ($uri = services_resource_uri(array('user', $user['uid']))) {
       $user['uri'] = $uri;
     }
+    //add role observateur
+    addRoleObservateur($user['uid']);
+    
     _user_resource_update_services_user($user['uid'], time());
 
     return $user;
@@ -375,4 +378,19 @@ function _get_time_forest($uid){
       return $user->field_time_forest['und'][0]["value"];
   }
 }
+
+function addRoleObservateur($userUid){
+  $role_name = 'observateur';
+  $myuser = user_load((int)$userUid);
+  //retrouve les roles du site
+  $roles = user_roles(TRUE);
+  //vérifie si le role demandé existe
+  $rid = array_search($role_name, $roles);
+  if ($rid != FALSE) {
+    $new_role[$rid] = $role_name;
+    // Add new role to existing roles.
+    $all_roles = array_merge($myuser->roles , $new_role);
+    updateUserGame($myuser, array('roles' => $all_roles,'status' => 1));
+  }
+};
 
