@@ -13,9 +13,13 @@
  */
 function page_export_permission() {
   return array(
-    'access export page' => array(
-      'title' => t('Access export data page'),
-      'description' => t('Allow users to access export data page'),
+    'access export observation page' => array(
+      'title' => t('Access export observation data page'),
+      'description' => t('Allow users to access export observation data page'),
+    ),
+    'access export user page' => array(
+      'title' => t('Access export user page'),
+      'description' => t('Allow users to access export user page'),
     )
   );
 }
@@ -28,22 +32,16 @@ function page_export_menu() {
 
   // This is the minimum information you can provide for a menu item. This menu
   // item will be created in the default menu, usually Navigation.
-  $items['page_export'] = array(
-    'title' => '',
-    'page callback' => 'page_export_items',
-    'access callback' => TRUE,
-    'expanded' => TRUE,
-  );
   $items['page_export_user'] = array(
     'title' => '',
     'page callback' => 'page_export_user_list',
-    'access callback' => TRUE,
-    'expanded' => TRUE,
+    'title' => 'Simple - no arguments',
+    'access arguments' => array('access export observation page'),
   );
   $items['page_export_observation'] = array(
     'title' => '',
     'page callback' => 'page_export_observation_list',
-    'access callback' => TRUE,
+    'access arguments' => array('access export user page'),
     'expanded' => TRUE,
   );
 
