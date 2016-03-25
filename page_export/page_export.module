@@ -203,7 +203,7 @@ function page_export_observation_entry_load($entry = array()) {
             left join `obfback`.field_data_field_cd_nom as cdnom on (fobs.nid = cdnom.entity_id)
             left join `obfback`.taxonomy_term_data as taxodata on (cdnom.field_cd_nom_tid = taxodata.tid)
             Inner join `obfback`.field_data_field_observation_timestamp as ot on (fobs.nid = ot.entity_id)
-            left join `obfback`.field_data_field_lat_long as latlong on (latlong.entity_id)
+            left join `obfback`.field_data_field_lat_long as latlong on (fobs.nid = latlong.entity_id)
             left join `obfback`.field_data_field_observation_code_dept as dept on (fobs.nid = dept.entity_id)
             left join `obfback`.field_data_field_code_commune as commune on (fobs.uid = commune.entity_id)
             group by fobs.nid order by fobs.nid; 
