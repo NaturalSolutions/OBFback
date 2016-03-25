@@ -35,7 +35,6 @@ function page_export_menu() {
   $items['page_export_user'] = array(
     'title' => '',
     'page callback' => 'page_export_user_list',
-    'title' => 'Simple - no arguments',
     'access arguments' => array('access export observation page'),
   );
   $items['page_export_observation'] = array(
