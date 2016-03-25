@@ -1,0 +1,279 @@
+<?php
+/**
+* see https://api.drupal.org/api/examples/page_example%21page_example.module/7
+*/
+
+/**
+ * Implements hook_permission().
+ *
+ * Since the access to our new custom pages will be granted based on
+ * special permissions, we need to define what those permissions are here.
+ * This ensures that they are available to enable on the user role
+ * administration pages.
+ */
+function page_export_permission() {
+  return array(
+    'access export page' => array(
+      'title' => t('Access export data page'),
+      'description' => t('Allow users to access export data page'),
+    )
+  );
+}
+
+/**
+  * @see hook_menu()
+ * @see menu_example
+ */
+function page_export_menu() {
+
+  // This is the minimum information you can provide for a menu item. This menu
+  // item will be created in the default menu, usually Navigation.
+  $items['page_export'] = array(
+    'title' => '',
+    'page callback' => 'page_export_items',
+    'access callback' => TRUE,
+    'expanded' => TRUE,
+  );
+  $items['page_export_user'] = array(
+    'title' => '',
+    'page callback' => 'page_export_user_list',
+    'access callback' => TRUE,
+    'expanded' => TRUE,
+  );
+  $items['page_export_observation'] = array(
+    'title' => '',
+    'page callback' => 'page_export_observation_list',
+    'access callback' => TRUE,
+    'expanded' => TRUE,
+  );
+
+  return $items;
+}
+
+function page_export_items(){
+  $output = '';
+  $links = array(
+    '#type'  => 'link',
+    '#title' => t('Observation Export'),
+    '#href'  => 'page_export_observation',
+  );
+  $output .= drupal_render($links);
+
+  return $output;
+}
+
+/*////////////////USER////////////////////*/
+
+function page_export_entry_load($entry = array()) {
+  // Read all fields from the dbtng_example table.
+  $select = db_select('users', 'u');
+  //uid and name
+  $select->leftJoin('users_roles', 'ur', 'u.uid = ur.uid');
+  $select->leftJoin('role', 'ro', 'ur.rid=ro.rid');
+  //fisrtname
+  $select->join('field_data_field_first_name', 'fname', 'u.uid = fname.entity_id');
+  //lastname
+  $select->join('field_data_field_last_name', 'lname', 'u.uid = lname.entity_id');
+  //field_newsletter field_data_field_newsletter  
+  $select->leftJoin('field_data_field_newsletter', 'newsletter', 'u.uid = newsletter.entity_id');
+  //category 
+  $select->leftJoin('field_data_field_user_category', 'usercat', 'u.uid = usercat.entity_id');
+  $select->leftJoin('taxonomy_term_data', 'taxodata', 'usercat.field_user_category_tid = taxodata.tid');
+
+  $result = $select
+    ->fields('u', array('uid','mail'))
+    ->fields('fname', array('field_first_name_value'))
+    ->fields('lname', array('field_last_name_value'))
+    ->fields('newsletter', array('field_newsletter_value'))
+    ->fields('taxodata', array('name'))
+    ->fields('ro',array('name'))
+    ->condition('ro.name', 'observateur', '=');
+
+  return $result->execute()->fetchAll();
+}
+
+/**
+ * Render a list of entries in the database.
+ */
+function page_export_user_list() {
+  $output = '';
+
+  if ($entries = page_export_entry_load()) {
+    $rows = array();
+    $userForm = drupal_get_form('page_export_userform');
+    foreach ($entries as $entry) {
+      // Sanitize the data before handing it off to the theme layer.
+      $rows[] = array_map('check_plain', (array) $entry);
+    }
+    // Make a table for them.
+    $header = array(t('uid'), t('email'), t('fisrtname'), t('lastname'), t('newsletter'), t('category'));
+    $output .= "<h3> Export des utilisateurs</h3>";
+    $output .= theme('table', array('header' => $header, 'rows' => $rows));
+    $output .= drupal_render($userForm);
+  }
+  else {
+    drupal_set_message(t('No entries have been added yet.'));
+  }
+  return $output;
+}
+
+/**
+ *  A basic form with a submit button.
+ *
+ */
+function page_export_userform($form, &$form_state) {
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Télécharger',
+  );
+  return $form;
+}
+
+/**
+ * Validates the form.
+ */
+function page_export_userform_validate($form, &$form_state) {
+    // $year_of_birth = $form_state['values']['year_of_birth'];
+    // if ($year_of_birth && ($year_of_birth < 1900 || $year_of_birth > 2000)) {
+    //     form_set_error('year_of_birth', 'Enter a year between 1900 and 2000.');
+    // }
+}
+
+/**
+ * Add a submit handler/function to the form.
+ *
+ * This will add a completion message to the screen when the
+ * form successfully processes
+ */
+function page_export_userform_submit($form, &$form_state) {
+  $path = 'public://export/user/export-user-obfmobile.csv';
+  $headerRow = array(t('uid'), t('email'), t('fisrtname'), t('lastname'), t('newsletter'), t('category'));
+
+
+  $entries = page_export_entry_load();
+  page_export_csv_format($path,$headerRow,$entries);
+  $error = page_export_browser_download_file($path,$headerRow);  
+
+
+  drupal_set_message($error);
+}
+
+/*////////////////OBSERVATION////////////////////*/
+/**
+ *  A basic form with a submit button.
+ *
+ */
+function page_export_obsform($form, &$form_state) {
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Télécharger',
+  );
+  return $form;
+}
+/**
+ * Render a list of entries in the database.
+ */
+function page_export_observation_list() {
+  $output = '';
+
+  // Get all entries in the dbtng_example table.
+  if ($entries = page_export_observation_entry_load()) {
+    $rows = page_export_format_query($entries);
+    $obsForm = drupal_get_form('page_export_obsform');
+    $output .= "<h3> Export des observations</h3>";
+    // Make a table for them.
+    $header = array(t('id'),t('cd_nom'), t('timestamp'), t('latlong'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
+    $output .= theme('table', array('header' => $header, 'rows' => $rows));
+    $output .= drupal_render($obsForm);
+  }
+  else {
+    drupal_set_message(t('No entries have been added yet.'));
+  }
+  return $output;
+}
+
+
+function page_export_observation_entry_load($entry = array()) {
+  $query = db_query("
+            Select fobs.nid, taxodata.name, ot.field_observation_timestamp_value, field_lat_long_value, field_observation_code_dept_value, field_code_commune_value, mail,field_first_name_value,field_last_name_value, uri
+            FROM v_file_obs AS fobs
+            Inner join `noe-obf`.field_data_field_last_name as lname on (fobs.uid = lname.entity_id)
+            Inner join `noe-obf`.field_data_field_first_name as fname on (fobs.uid = fname.entity_id)
+            Inner join `noe-obf`.users as u on (fobs.uid = u.uid)
+            left join `noe-obf`.field_data_field_field_cd_nom as cdnom on (fobs.nid = cdnom.entity_id)
+            left join `noe-obf`.taxonomy_term_data as taxodata on (cdnom.field_field_cd_nom_tid = taxodata.tid)
+            Inner join `noe-obf`.field_data_field_observation_timestamp as ot on (fobs.nid = ot.entity_id)
+            left join `noe-obf`.field_data_field_lat_long as latlong on (latlong.entity_id)
+            left join `noe-obf`.field_data_field_observation_code_dept as dept on (fobs.nid = dept.entity_id)
+            left join `noe-obf`.field_data_field_code_commune as commune on (fobs.uid = commune.entity_id)
+            group by fobs.nid order by fobs.nid; 
+          ");
+  $result = $query->fetchAll();
+
+  return $result;
+}
+
+ /* Add a submit handler/function to the form.
+ *
+ * This will add a completion message to the screen when the
+ * form successfully processes
+ */
+function page_export_obsform_submit($form, &$form_state) {
+  $path = 'public://export/user/export-observation-obfmobile.csv';
+  $headerRow = array(t('id'),t('cd_nom'), t('timestamp'), t('latlong'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
+  $entries = page_export_observation_entry_load();
+  page_export_csv_format($path,$headerRow,$entries);
+  $error = page_export_browser_download_file($path,$headerRow);  
+  drupal_set_message($error);
+}
+
+/*////////////////UTILITIES////////////////////*/
+
+function page_export_format_query($object){
+    $rows = array();
+    foreach ($object as $k => $entry) {
+      // Sanitize the data before handing it off to the theme layer.
+      $rows[] = array_map('check_plain', (array) $entry);
+      if(isset($rows[$k]['uri'])){
+        $uris = explode(",", $rows[$k]['uri']);
+        unset($rows[$k]['uri']);
+        foreach ($uris as $value) {
+          $rows[$k][] = file_create_url($value);
+        }
+      }
+    }
+  return $rows;
+}
+
+function page_export_csv_format($path,$headerRow,$entries){
+  // $entries = page_export_observation_entry_load();
+  $rows = page_export_format_query($entries);
+  // mkdir('public://export', 0777, true);
+  $fp = fopen($path, 'w');
+  $header = $headerRow;
+  fputcsv($fp, $header);
+  foreach($rows as $entry){
+    $field = array_map('check_plain', (array) $entry);
+    fputcsv($fp, $field);
+  }
+  fclose($fp);
+}
+
+function page_export_browser_download_file(&$path,&$headerRow) {
+  if (file_exists($path)) {
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename='.basename($path));
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($path));
+    ob_clean();
+    flush();
+    readfile($path);
+    exit;
+  }else{
+    return 'erreur : le fichier n\'existe pas';
+  }  
+}

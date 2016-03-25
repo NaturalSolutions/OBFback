@@ -1,0 +1,4 @@
+name = page export
+description = export observations and users in a csv file
+core = 7.x
+package = custom
