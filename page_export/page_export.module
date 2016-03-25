@@ -200,7 +200,7 @@ function page_export_observation_entry_load($entry = array()) {
             Inner join `obfback`.field_data_field_last_name as lname on (fobs.uid = lname.entity_id)
             Inner join `obfback`.field_data_field_first_name as fname on (fobs.uid = fname.entity_id)
             Inner join `obfback`.users as u on (fobs.uid = u.uid)
-            left join `obfback`.field_data_field_field_cd_nom as cdnom on (fobs.nid = cdnom.entity_id)
+            left join `obfback`.field_data_field__cd_nom as cdnom on (fobs.nid = cdnom.entity_id)
             left join `obfback`.taxonomy_term_data as taxodata on (cdnom.field_field_cd_nom_tid = taxodata.tid)
             Inner join `obfback`.field_data_field_observation_timestamp as ot on (fobs.nid = ot.entity_id)
             left join `obfback`.field_data_field_lat_long as latlong on (latlong.entity_id)
