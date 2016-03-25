@@ -29,7 +29,8 @@ function custom_form_user_user_form_after_build($form, &$form_state) {
     $form['picture']['#suffix'] = '</div>';
     $form['field_time_forest']['#prefix'] = '<div style="display: none;">';
     $form['field_time_forest']['#suffix'] = '</div>';
-    
+    $form['account']['name']['#prefix'] = '<div style="display: none;">';
+    $form['account']['name'] ['#suffix'] = '</div>';
   }
  
   return $form;
