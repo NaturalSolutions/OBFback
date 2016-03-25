@@ -217,7 +217,7 @@ function page_export_observation_entry_load($entry = array()) {
  * form successfully processes
  */
 function page_export_obsform_submit($form, &$form_state) {
-  $path = 'public://export/user/export-observation-obfmobile.csv';
+  $path = 'public://export/observation/export-observation-obfmobile.csv';
   $headerRow = array(t('id'),t('cd_nom'), t('timestamp'), t('latlong'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
   $entries = page_export_observation_entry_load();
   page_export_csv_format($path,$headerRow,$entries);
@@ -246,7 +246,12 @@ function page_export_format_query($object){
 function page_export_csv_format($path,$headerRow,$entries){
   // $entries = page_export_observation_entry_load();
   $rows = page_export_format_query($entries);
-  // mkdir('public://export', 0777, true);
+  if(!is_dir('public://export/user')){
+    mkdir('public://export/user', 0777, true);
+  }
+  if(!is_dir('public://export/observation')){
+    mkdir('public://export/observation', 0777, true);
+  }
   $fp = fopen($path, 'w');
   $header = $headerRow;
   fputcsv($fp, $header);
