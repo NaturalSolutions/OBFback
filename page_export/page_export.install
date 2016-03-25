@@ -7,7 +7,7 @@ function page_export_install() {
   $query = db_query("
             CREATE OR REPLACE 
             ALGORITHM = UNDEFINED 
-            DEFINER = `noe-obf-admin`@`localhost`
+            DEFINER = `obfback`@`localhost`
             SQL SECURITY DEFINER
             VIEW `v_file_obs` AS
             SELECT `n`.`nid`, `foi`.`field_observation_image_fid`, `u`.`uid`, GROUP_CONCAT(`fm`.`uri` SEPARATOR ',' ) AS `uri`
