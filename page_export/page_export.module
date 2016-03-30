@@ -105,8 +105,8 @@ function page_export_user_list() {
     // Make a table for them.
     $header = array(t('uid'), t('email'), t('fisrtname'), t('lastname'), t('newsletter'), t('category'));
     $output .= "<h3> Export des utilisateurs</h3>";
-    $output .= theme('table', array('header' => $header, 'rows' => $rows));
     $output .= drupal_render($userForm);
+    $output .= theme('table', array('header' => $header, 'rows' => $rows));
   }
   else {
     drupal_set_message(t('No entries have been added yet.'));
@@ -178,10 +178,10 @@ function page_export_observation_list() {
     $rows = page_export_format_query($entries);
     $obsForm = drupal_get_form('page_export_obsform');
     $output .= "<h3> Export des observations</h3>";
+    $output .= drupal_render($obsForm);
     // Make a table for them.
     $header = array(t('id'),t('cd_nom'), t('timestamp'), t('latlong'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
     $output .= theme('table', array('header' => $header, 'rows' => $rows));
-    $output .= drupal_render($obsForm);
   }
   else {
     drupal_set_message(t('No entries have been added yet.'));
