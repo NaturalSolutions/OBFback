@@ -8,6 +8,10 @@ function custom_form_user_form_alter(&$form, &$form_state, $form_id) {
     // Attach a custom after build handler.
     $form['#after_build'][] = 'custom_form_user_user_form_after_build';
   }
+  if($form_id == 'user_login_block'){
+    $url = base_path();
+    $form['#action'] = $url.'node?destination=user';
+  }
 }
 
 /**
@@ -36,7 +40,4 @@ function custom_form_user_user_form_after_build($form, &$form_state) {
   return $form;
 }
 
-// function my_submit_handler(&$form, &$form_state) {
-//   $form_state['redirect'] = 'user/'+$user->uid;
-// }
 
