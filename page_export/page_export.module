@@ -33,12 +33,12 @@ function page_export_menu() {
   // This is the minimum information you can provide for a menu item. This menu
   // item will be created in the default menu, usually Navigation.
   $items['page_export_user'] = array(
-    'title' => '',
+    'title' => 'Export des utilisateurs',
     'page callback' => 'page_export_user_list',
     'access arguments' => array('access export observation page'),
   );
   $items['page_export_observation'] = array(
-    'title' => '',
+    'title' => 'Export des observations',
     'page callback' => 'page_export_observation_list',
     'access arguments' => array('access export user page'),
     'expanded' => TRUE,
@@ -104,7 +104,6 @@ function page_export_user_list() {
     }
     // Make a table for them.
     $header = array(t('uid'), t('email'), t('fisrtname'), t('lastname'), t('newsletter'), t('category'));
-    $output .= "<h3> Export des utilisateurs</h3>";
     $output .= drupal_render($userForm);
     $output .= theme('table', array('header' => $header, 'rows' => $rows));
   }
@@ -177,7 +176,6 @@ function page_export_observation_list() {
   if ($entries = page_export_observation_entry_load()) {
     $rows = page_export_format_query($entries);
     $obsForm = drupal_get_form('page_export_obsform');
-    $output .= "<h3> Export des observations</h3>";
     $output .= drupal_render($obsForm);
     // Make a table for them.
     $header = array(t('id'),t('cd_nom'), t('timestamp'), t('latlong'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
@@ -193,16 +191,16 @@ function page_export_observation_list() {
 function page_export_observation_entry_load($entry = array()) {
   $query = db_query("
             Select fobs.nid, taxodata.name, ot.field_observation_timestamp_value, field_lat_long_value, field_observation_code_dept_value, field_code_commune_value, mail,field_first_name_value,field_last_name_value, uri
-            FROM v_file_obs AS fobs
-            Inner join `obfback`.field_data_field_last_name as lname on (fobs.uid = lname.entity_id)
-            Inner join `obfback`.field_data_field_first_name as fname on (fobs.uid = fname.entity_id)
-            Inner join `obfback`.users as u on (fobs.uid = u.uid)
-            left join `obfback`.field_data_field_cd_nom as cdnom on (fobs.nid = cdnom.entity_id)
-            left join `obfback`.taxonomy_term_data as taxodata on (cdnom.field_cd_nom_tid = taxodata.tid)
-            Inner join `obfback`.field_data_field_observation_timestamp as ot on (fobs.nid = ot.entity_id)
-            left join `obfback`.field_data_field_lat_long as latlong on (fobs.nid = latlong.entity_id)
-            left join `obfback`.field_data_field_observation_code_dept as dept on (fobs.nid = dept.entity_id)
-            left join `obfback`.field_data_field_code_commune as commune on (fobs.uid = commune.entity_id)
+            FROM {v_file_obs} AS fobs
+            Inner join {field_data_field_last_name} as lname on (fobs.uid = lname.entity_id)
+            Inner join {field_data_field_first_name} as fname on (fobs.uid = fname.entity_id)
+            Inner join {users} as u on (fobs.uid = u.uid)
+            left join {field_data_field_cd_nom} as cdnom on (fobs.nid = cdnom.entity_id)
+            left join {taxonomy_term_data} as taxodata on (cdnom.field_cd_nom_tid = taxodata.tid)
+            Inner join {field_data_field_observation_timestamp} as ot on (fobs.nid = ot.entity_id)
+            left join {field_data_field_lat_long} as latlong on (fobs.nid = latlong.entity_id)
+            left join {field_data_field_observation_code_dept} as dept on (fobs.nid = dept.entity_id)
+            left join {field_data_field_code_commune} as commune on (fobs.uid = commune.entity_id)
             group by fobs.nid order by fobs.nid; 
           ");
   $result = $query->fetchAll();
