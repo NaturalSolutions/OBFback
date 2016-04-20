@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function export_observation_install() {
+  $query = db_query("
+            CREATE OR REPLACE 
+            VIEW {v_file_obs} AS
+            SELECT `n`.`nid`, `foi`.`field_observation_image_fid`, `u`.`uid`, GROUP_CONCAT(`fm`.`uri` SEPARATOR ',' ) AS `uri`
+              FROM {`node`} AS `n`
+              INNER JOIN {`field_data_field_observation_image`} AS `foi` ON(`foi`.`entity_id` = `n`.`nid`)
+              INNER JOIN {`file_managed`} AS `fm` on (`foi`.`field_observation_image_fid` = `fm`.`fid`)
+              INNER JOIN {`users}` AS `u` on (`u`.`uid` = `n`.`uid`)
+              WHERE `n`.`type` = 'observation'
+              GROUP BY `n`.`nid` ORDER BY `n`.`nid` 
+          ");
+    $result = $query->execute();
+  }
+/**
+ * Implements hook_uninstall().
+ */
+function export_observation_uninstall() {
+  $query = db_query("DROP VIEW IF EXISTS {v_file_obs}");
+  $query->execute();
+}

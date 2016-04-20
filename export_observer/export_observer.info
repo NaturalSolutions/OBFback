@@ -1,0 +1,4 @@
+name = export observer
+description = export users in a csv file
+core = 7.x
+package = custom

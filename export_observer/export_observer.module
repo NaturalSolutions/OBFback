@@ -1,0 +1,296 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function export_observer_menu() {
+  $items = array();
+  $items['page_export_user'] = array(
+    'title' => 'Export user',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_export_user_list_form'),
+    'access arguments' => array("access content"),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK
+  );
+  return $items;
+}
+
+function export_observer_query($order= 'created', $sort= 'ASC'){
+    $select = db_select('users', 'u');
+  //uid and name
+  $select->leftJoin('users_roles', 'ur', 'u.uid = ur.uid');
+  $select->leftJoin('role', 'ro', 'ur.rid=ro.rid');
+  //fisrtname
+  $select->join('field_data_field_first_name', 'fname', 'u.uid = fname.entity_id');
+  //lastname
+  $select->join('field_data_field_last_name', 'lname', 'u.uid = lname.entity_id');
+  //field_newsletter field_data_field_newsletter  
+  $select->leftJoin('field_data_field_newsletter', 'newsletter', 'u.uid = newsletter.entity_id');
+  //category 
+  $select->leftJoin('field_data_field_user_category', 'usercat', 'u.uid = usercat.entity_id');
+  $select->leftJoin('taxonomy_term_data', 'taxodata', 'usercat.field_user_category_tid = taxodata.tid');
+
+  $result = $select
+    ->fields('u', array('created','uid','mail'))
+    ->fields('fname', array('field_first_name_value'))
+    ->fields('lname', array('field_last_name_value'))
+    ->fields('newsletter', array('field_newsletter_value'))
+    ->fields('taxodata', array('name'))
+    ->fields('ro',array('name'))
+    ->condition('ro.name', 'observateur', '=')
+    ->orderBy($order, $sort);
+  return $result;
+}
+
+function _export_user_list_form($form, &$form_state){
+
+  // Check if there is sorting request
+  if(isset($_GET['sort']) && isset($_GET['order'])){
+    // Sort it Ascending or Descending?
+    if($_GET['sort'] == 'asc')
+      $sort = 'ASC';
+    else
+      $sort = 'DESC';
+     // Which column will be sorted
+    switch($_GET['order']){
+      case 'User created time':
+        $order = 'created';
+        break;
+      case 'User ID':
+        $order = 'uid';
+        break;
+      case 'User lastname':
+        $order = 'field_last_name_value';
+        break;
+      case 'User firstname':
+        $order = 'field_first_name_value';
+        break;
+      case 'User newsletter':
+        $order = 'field_newsletter_value';
+        break;
+      case 'User category':
+        $order = 'name';
+        break;
+      default:
+        $order = 'created';
+      }
+    }
+   else {
+    // Default sort
+    $sort = 'ASC';
+    $order = 'created';
+   }
+
+  $header = array(
+    array('data' => t('User created time'),'field' => 'created'),
+    array('data' => t('User Id'),'field' => 'uid'),
+    array('data' => t('User email'),'field' => 'mail'),
+    array('data' => t('User lastname'),'field' => 'field_last_name_value'),
+    array('data' => t('User firstname'),'field' => 'field_first_name_value'),
+    array('data' => t('User newsletter'),'field' => 'field_newsletter_value'),
+    array('data' => t('User category'),'field' => 'name'),
+  );
+
+  $select= export_observer_query($order, $sort);
+
+  $form = array();
+   
+  $form['filter'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' => t('Filter option')
+  );
+  $form['filter']['filter_date'] = array(
+    '#type' => 'date',
+    '#title' => t('Choose date to filter'),
+    '#attributes' => array('class' => array('export-form-date')),
+    '#default_value' => array('year' => 2015, 'month' => 10, 'day' => 1),
+  );
+  $form['filter']['filter_newsletter'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Newsletter'),
+  );
+  $form['filter']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Filter'),
+  );
+
+  $form['filter']['reset'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => array('export-form-reset')),
+    '#value' => t('reset'),
+    '#submit' => array('_export_list_form_reset'),
+    // '#ajax' => array(  
+    //   'callback' => '_export_list_form_reset_js',
+    //   'wrapper' => '-export-user-list-form',
+    //   )
+  );
+
+  $form['filter']['export'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => array('export-form-export')),
+    '#value' => t('Download'),
+    '#submit' => array('_export_list_form_export'),
+    // '#ajax' => array(  
+    //   'callback' => '_export_list_form_reset_js',
+    //   'wrapper' => '-export-user-list-form',
+    //   )
+  );
+
+  if (!empty($form_state['filters']['date'])) {    
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $result = $select->condition('u.created', $dateTimeout, '>=');
+  }
+  if (!empty($form_state['filters']['newsletter'])) {
+    $result = $select->condition('newsletter.field_newsletter_value', db_like($form_state['filters']['newsletter']), '=');
+  }
+
+
+  $result = $select->execute();
+
+  $rows = array();
+  // Looping for filling the table rows
+  foreach ($result as $ord) {
+    // Fill the table rows
+    $rows[] = array(
+      format_date($ord->created,'custom','d-M-Y',date_default_timezone()) ,
+      $ord->uid,
+      $ord->mail,
+      l($ord->field_last_name_value, 'user/'. $ord->uid .'/edit'),
+      l($ord->field_first_name_value, 'user/'. $ord->uid .'/edit'),
+      $ord->field_newsletter_value,
+      $ord->name,
+    );
+  }
+
+  $form['table'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#empty' => t('Table has no row!')
+  );
+
+  $form['pager'] = array('#markup' => theme('pager'));
+
+  return $form;
+
+}
+
+function _export_user_list_form_submit($form, &$form_state) {
+  $form_state['filters']['date'] = $form_state['values']['filter_date'];
+  $form_state['filters']['newsletter'] = $form_state['values']['filter_newsletter'];
+  $form_state['rebuild'] = TRUE;
+}
+
+function _export_list_form_reset($form, &$form_state){
+  $form_state['values']['filter_date'] = '';
+  $form_state['values']['filter_newsletter'] = '';
+}
+
+function _export_list_form_export($form, &$form_state){
+  $path = 'public://export/user/export-user-obfmobile.csv';
+  $headerRow = array(t('created'), t('uid'), t('email'), t('fisrtname'), t('lastname'), t('newsletter'), t('category'));
+
+  $select = export_observer_query();
+
+  if (!empty($form_state['filters']['date'])) {    
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $result = $select->condition('u.created', $dateTimeout, '>=');
+  }
+  if (!empty($form_state['filters']['newsletter'])) {
+    $result = $select->condition('newsletter.field_newsletter_value', db_like($form_state['filters']['newsletter']), '=');
+  }
+
+  $result = $select->execute();
+
+  export_observer_csv_format($path,$headerRow,$result);
+  $error = export_observer_browser_download_file($path,$headerRow);  
+  
+  if ($error) {
+    drupal_set_message($error);
+  }
+}
+
+// function _export_list_form_reset_js($form, &$form_state){
+//   //TODO: update the table without filters
+//   if (!form_get_errors()) {
+
+//     $form_id = $form['#-export-user-list-form'];
+
+//     // Get the unpopulated form.
+//     $form = form_get_cache($form_state['input']['form_build_id'], $form_state);
+
+//     // Rebuild it, without values
+//     $form_state['input']['filter_user'] = '';
+//     $form_state['filters']['user'] = '';
+//     $form = form_builder($form_id, $form, $form_state);
+//   }
+//   return $form;
+// }
+
+/*////////////////UTILITIES////////////////////*/
+
+function export_observer_format_query($object){
+    $rows = array();
+    foreach ($object as $k => $entry) {
+      // Sanitize the data before handing it off to the theme layer.
+      $rows[] = array_map('check_plain', (array) $entry);
+      if(isset($rows[$k]['uri'])){
+        $uris = explode(",", $rows[$k]['uri']);
+        unset($rows[$k]['uri']);
+        foreach ($uris as $value) {
+          $rows[$k][] = file_create_url($value);
+        }
+      }
+    }
+  return $rows;
+}
+
+function export_observer_csv_format($path,$headerRow,$entries){
+  $rows = export_observer_format_query($entries);
+  if(!is_dir('public://export/user')){
+    mkdir('public://export/user', 0777, true);
+  }
+  if(!is_dir('public://export/observation')){
+    mkdir('public://export/observation', 0777, true);
+  }
+  $fp = fopen($path, 'w');
+  $header = $headerRow;
+  fputcsv($fp, $header);
+  foreach($rows as $entry){
+    $field = array_map('check_plain', (array) $entry);
+    fputcsv($fp, $field);
+  }
+  fclose($fp);
+}
+
+function export_observer_browser_download_file(&$path,&$headerRow) {
+  if (file_exists($path)) {
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename='.basename($path));
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($path));
+    ob_clean();
+    flush();
+    readfile($path);
+    exit;
+  }else{
+    return 'erreur : le fichier n\'existe pas';
+  }  
+}

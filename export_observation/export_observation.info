@@ -1,0 +1,4 @@
+name = export observation
+description = export observations in a csv file
+core = 7.x
+package = custom

@@ -1,0 +1,292 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function export_observation_menu() {
+  $items = array();
+  $items['page_export_observation'] = array(
+    'title' => 'Export observation',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_export_observation_list_form'),
+    'access arguments' => array("access content"),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK
+  );
+  return $items;
+}
+
+function export_observation_query($order= 'fobs.nid', $sort= 'ASC'){
+  $select = db_select('v_file_obs', 'fobs');
+    $select->join('field_data_field_last_name', 'lname', 'fobs.uid = lname.entity_id');
+    $select->join('field_data_field_first_name', 'fname', 'fobs.uid = fname.entity_id');
+    $select->join('users', 'u', 'fobs.uid = u.uid');
+    $select->leftJoin('field_data_field_cd_nom', 'cdnom', 'fobs.nid = cdnom.entity_id');
+    $select->leftJoin('taxonomy_term_data', 'taxodata', 'cdnom.field_cd_nom_tid = taxodata.tid');
+    $select->join('field_data_field_observation_timestamp', 'ot', 'fobs.nid = ot.entity_id');
+    $select->join('field_data_field_lat_long', 'latlong', 'fobs.nid = latlong.entity_id');
+    $select->leftJoin('field_data_field_observation_code_dept', 'dept', 'fobs.nid = dept.entity_id');
+    $select->leftJoin('field_data_field_code_commune', 'commune', 'fobs.uid = commune.entity_id');
+
+  $result = $select
+    ->fields('fobs', array('nid'))
+    ->fields('taxodata', array('name'))
+    ->fields('ot', array('field_observation_timestamp_value'))
+    ->fields('latlong', array('field_lat_long_value'))
+    ->fields('dept', array('field_observation_code_dept_value'))
+    ->fields('commune', array('field_code_commune_value'))
+    ->fields('u', array('mail'))
+    ->fields('fname', array('field_first_name_value'))
+    ->fields('lname', array('field_last_name_value'))
+    ->fields('fobs', array('uri'))
+    ->orderBy($order, $sort);
+
+  return $result;
+}
+
+function _export_observation_list_form($form, &$form_state){
+
+  // Check if there is sorting request
+  if(isset($_GET['sort']) && isset($_GET['order'])){
+    // Sort it Ascending or Descending?
+    if($_GET['sort'] == 'asc')
+      $sort = 'ASC';
+    else
+      $sort = 'DESC';
+     // Which column will be sorted
+    switch($_GET['order']){
+      case 'Observation ID':
+        $order = 'fobs.nid';
+        break;
+      case 'cd_nom':
+        $order = 'name';
+        break;
+      case 'timestamp':
+        $order = 'field_observation_timestamp_value';
+        break;
+      case 'latlong':
+        $order = 'field_lat_long_value';
+        break;
+      case 'departement':
+        $order = 'field_observation_code_dept_value';
+        break;
+      case 'commune':
+        $order = 'field_code_commune_value';
+        break;
+      case 'email':
+        $order = 'mail';
+        break;
+      case 'firstname':
+        $order = 'field_first_name_value';
+        break;
+      case 'lastname':
+        $order = 'field_last_name_value';
+        break;
+      default:
+        $order = 'fobs.nid';
+      }
+    }
+   else {
+    // Default sort
+    $sort = 'ASC';
+    $order = 'fobs.nid';
+   }
+
+  $header = array(
+    array('data' => t('Observation ID'),'field' => 'nid'),
+    t('cd_nom'),
+    array('data' => t('timestamp'),'field' => 'field_observation_timestamp_value'),
+    t('latlong'),
+    array('data' => t('departement'),'field' => 'field_observation_code_dept_value'),
+    array('data' => t('commune'),'field' => 'field_code_commune_value'),
+    array('data' => t('email'),'field' => 'mail'),
+    t('lastname'),
+    t('firstname'),
+    t('image 1'), 
+    t('image 2'), 
+    t('image 3')
+  );
+
+  $select= export_observation_query($order, $sort);
+
+  $form = array();
+   
+  $form['filter'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#title' => t('Filter option')
+  );
+  $form['filter']['filter_date'] = array(
+    '#type' => 'date',
+    '#title' => t('Choose date to filter'),
+    '#attributes' => array('class' => array('export-form-date')),
+    '#default_value' => array('year' => 2015, 'month' => 10, 'day' => 1),
+  );
+  $form['filter']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Filter'),
+  );
+
+  $form['filter']['reset'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => array('export-form-reset')),
+    '#value' => t('reset'),
+    '#submit' => array('_export__observation_list_form_reset'),
+  );
+
+  $form['filter']['export'] = array(
+    '#type' => 'submit',
+    '#attributes' => array('class' => array('export-form-export')),
+    '#value' => t('Download'),
+    '#submit' => array('_export_observation_list_form_export'),
+
+  );
+
+  if (!empty($form_state['filters']['date'])) {    
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $result = $select->condition('ot.field_observation_timestamp_value', $dateTimeout, '>=');
+  }
+
+  $result = $select->execute();
+
+  $rows = array();
+  // Looping for filling the table rows
+  foreach ($result as $ord) {
+    // Fill the table rows
+    $rows[] = array(
+      l($ord->nid, 'node/'. $ord->nid),
+      $ord->name,
+      format_date($ord->field_observation_timestamp_value,'custom','d-M-Y',date_default_timezone()) ,
+      $ord->field_lat_long_value,
+      $ord->field_observation_code_dept_value,
+      $ord->field_code_commune_value,
+      $ord->mail,
+      $ord->field_last_name_value,
+      $ord->field_first_name_value,
+      $ord->uri,
+    );
+  }
+
+  $form['table'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#empty' => t('Table has no row!')
+  );
+
+  $form['pager'] = array('#markup' => theme('pager'));
+
+  return $form;
+
+}
+
+function _export_observation_list_form_submit($form, &$form_state) {
+  $form_state['filters']['date'] = $form_state['values']['filter_date'];
+  $form_state['rebuild'] = TRUE;
+}
+
+function _export__observation_list_form_reset($form, &$form_state){
+  $form_state['values']['filter_date'] = '';
+}
+
+function _export_observation_list_form_export($form, &$form_state){
+  $path = 'public://export/observation/export-observation-obfmobile.csv';
+  $headerRow = array();
+  $headerRow = array(t('id'),t('cd_nom'), t('timestamp'), t('latlong'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
+
+  $select = export_observation_query();
+
+  if (!empty($form_state['filters']['date'])) {    
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $dateFilter = "";
+    $dateFilterTimestamp = implode('/', $form_state['filters']['date']);
+    $dateTimeout = strtotime($dateFilterTimestamp); 
+    $result = $select->condition('ot.field_observation_timestamp_value', $dateTimeout, '>=');
+  }
+
+  $result = $select->execute();
+
+  export_observation_csv_format($path,$headerRow,$result);
+  $error = export_observation_browser_download_file($path,$headerRow);  
+  
+  if ($error) {
+    drupal_set_message($error);
+  }
+}
+
+// function _export__observation_list_form_reset_js($form, &$form_state){
+//   //TODO: update the table without filters
+//   if (!form_get_errors()) {
+
+//     $form_id = $form['#-export-user-list-form'];
+
+//     // Get the unpopulated form.
+//     $form = form_get_cache($form_state['input']['form_build_id'], $form_state);
+
+//     // Rebuild it, without values
+//     $form_state['input']['filter_user'] = '';
+//     $form_state['filters']['user'] = '';
+//     $form = form_builder($form_id, $form, $form_state);
+//   }
+//   return $form;
+// }
+
+/*////////////////UTILITIES////////////////////*/
+
+function export_observation_format_query($object){
+    $rows = array();
+    foreach ($object as $k => $entry) {
+      // Sanitize the data before handing it off to the theme layer.
+      $rows[] = array_map('check_plain', (array) $entry);
+      if(isset($rows[$k]['uri'])){
+        $uris = explode(",", $rows[$k]['uri']);
+        unset($rows[$k]['uri']);
+        foreach ($uris as $value) {
+          $rows[$k][] = file_create_url($value);
+        }
+      }
+    }
+  return $rows;
+}
+
+function export_observation_csv_format($path,$headerRow,$entries){
+  $rows = export_observation_format_query($entries);
+  if(!is_dir('public://export/observation')){
+    mkdir('public://export/observation', 0777, true);
+  }
+  $fp = fopen($path, 'w');
+  $header = $headerRow;
+  fputcsv($fp, $header);
+  foreach($rows as $entry){
+    $field = array_map('check_plain', (array) $entry);
+    fputcsv($fp, $field);
+  }
+  fclose($fp);
+}
+
+function export_observation_browser_download_file(&$path,&$headerRow) {
+  if (file_exists($path)) {
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename='.basename($path));
+    header('Content-Transfer-Encoding: binary');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($path));
+    ob_clean();
+    flush();
+    readfile($path);
+    exit;
+  }else{
+    return 'erreur : le fichier n\'existe pas';
+  }  
+}
