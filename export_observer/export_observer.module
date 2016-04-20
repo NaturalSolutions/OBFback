@@ -1,6 +1,23 @@
 <?php
 
 /**
+ * Implements hook_permission().
+ *
+ * Since the access to our new custom pages will be granted based on
+ * special permissions, we need to define what those permissions are here.
+ * This ensures that they are available to enable on the user role
+ * administration pages.
+ */
+function export_observer_permission() {
+  return array(
+    'access export user page' => array(
+      'title' => t('Access export user page'),
+      'description' => t('Allow users to access export user page'),
+    )
+  );
+}
+
+/**
  * Implements hook_menu().
  */
 function export_observer_menu() {
@@ -17,7 +34,7 @@ function export_observer_menu() {
 }
 
 function export_observer_query($order= 'created', $sort= 'ASC'){
-    $select = db_select('users', 'u');
+  $select = db_select('users', 'u');
   //uid and name
   $select->leftJoin('users_roles', 'ur', 'u.uid = ur.uid');
   $select->leftJoin('role', 'ro', 'ur.rid=ro.rid');
@@ -99,7 +116,7 @@ function _export_user_list_form($form, &$form_state){
   $form['filter'] = array(
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
+    '#collapsed' => FALSE,
     '#title' => t('Filter option')
   );
   $form['filter']['filter_date'] = array(
