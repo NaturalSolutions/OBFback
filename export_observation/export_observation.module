@@ -270,6 +270,7 @@ function export_observation_format_query($object){
     foreach ($object as $k => $entry) {
       // Sanitize the data before handing it off to the theme layer.
       $rows[] = array_map('check_plain', (array) $entry);
+      $rows[$k]['nid'] = $rows[$k]['nid'].'noeEnForet';
       if(isset($rows[$k]['uri'])){
         $uris = explode(",", $rows[$k]['uri']);
         unset($rows[$k]['uri']);
