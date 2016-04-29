@@ -179,9 +179,17 @@ function _export_observation_list_form($form, &$form_state){
 
   $rows = array();
   // Looping for filling the table rows
-  foreach ($result as $ord) {
+  foreach ($result as $k => $ord) {
+    //Display picture
+    if(isset($ord->uri)){
+      $uris = explode(",", $ord->uri);
+      for ($i=0; $i < count($uris); $i++) {
+        $uris[$i] = '<img src='.image_style_url("thumbnail",$uris[$i]).' alt="thumbnail" />';
+      }
+    }
+
     // Fill the table rows
-    $rows[] = array(
+    $rows[$k] = array(
       l($ord->nid, 'node/'. $ord->nid),
       $ord->name,
       format_date($ord->field_observation_timestamp_value,'custom','d-M-Y',date_default_timezone()) ,
@@ -191,8 +199,8 @@ function _export_observation_list_form($form, &$form_state){
       $ord->mail,
       $ord->field_last_name_value,
       $ord->field_first_name_value,
-      $ord->uri,
     );
+    $rows[$k] = array_merge($rows[$k], $uris);
   }
 
   $form['table'] = array(
