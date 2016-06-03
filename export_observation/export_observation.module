@@ -43,7 +43,7 @@ function export_observation_query($order= 'fobs.nid', $sort= 'ASC'){
     $select->join('field_data_field_observation_timestamp', 'ot', 'fobs.nid = ot.entity_id');
     $select->join('field_data_field_lat_long', 'latlong', 'fobs.nid = latlong.entity_id');
     $select->leftJoin('field_data_field_observation_code_dept', 'dept', 'fobs.nid = dept.entity_id');
-    $select->leftJoin('field_data_field_code_commune', 'commune', 'fobs.uid = commune.entity_id');
+    $select->leftJoin('field_data_field_code_commune', 'commune', 'fobs.nid = commune.entity_id');
 
   $result = $select
     ->fields('fobs', array('nid'))
