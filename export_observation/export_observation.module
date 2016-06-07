@@ -127,7 +127,12 @@ function _export_observation_list_form($form, &$form_state){
   $select= export_observation_query($order, $sort);
 
   $form = array();
-   
+
+  $form['from'] = array(
+    '#type' => 'item',
+    '#title' => 'Informations',
+    '#description' => t('Les coordonnés latitude longitude égaux à 0 ne sont pas exportées. Si les coordonnés sont différents de zéro, l\'information de commune n\'est pas exportée.'),
+  );
   $form['filter'] = array(
     '#type' => 'fieldset',
     '#collapsible' => TRUE,
