@@ -291,8 +291,11 @@ function export_observation_format_query($object){
           $rows[$k][] = file_create_url($value);
         }
       }
-      if(isset($rows[$k]['field_lat_long_value'])){
+      $A_latlong = explode("/", $rows[$k]['field_lat_long_value']);
+      if(!empty($A_latlong[0]) && !empty($A_latlong[1])) {
         $rows[$k]['field_code_commune_value'] = '';
+      }elseif(!empty($rows[$k]['field_code_commune_value']) &&  empty($A_latlong[0]) || empty($A_latlong[1])){
+        $rows[$k]['field_lat_long_value'] = '';
       }
     }
   return $rows;
