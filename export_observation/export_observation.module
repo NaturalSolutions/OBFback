@@ -294,11 +294,15 @@ function export_observation_format_query($object){
         }
       }
       $A_latlong = explode("/", $rows[$k]['field_lat_long_value']);
+
       if(!empty($A_latlong[0]) && !empty($A_latlong[1])) {
         $rows[$k]['field_code_commune_value'] = '';
-      }elseif(!empty($rows[$k]['field_code_commune_value']) &&  empty($A_latlong[0]) || empty($A_latlong[1])){
-        $rows[$k]['field_lat_long_value'] = '';
       }
+
+      array_splice($rows[$k],4, 0, $A_latlong[0]);
+      array_splice($rows[$k],5, 0, $A_latlong[1]);
+      unset($rows[$k]['field_lat_long_value']);
+
     }
   return $rows;
 }
