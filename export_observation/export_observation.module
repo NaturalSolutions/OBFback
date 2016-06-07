@@ -314,10 +314,10 @@ function export_observation_csv_format($path,$headerRow,$entries){
   }
   $fp = fopen($path, 'w');
   $header = $headerRow;
-  fputcsv($fp, $header);
+  fputcsv($fp, $header, ";");
   foreach($rows as $entry){
     $field = array_map('check_plain', (array) $entry);
-    fputcsv($fp, $field);
+    fputcsv($fp, $field, ";");
   }
   fclose($fp);
 }
