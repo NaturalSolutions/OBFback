@@ -131,7 +131,7 @@ function _export_observation_list_form($form, &$form_state){
   $form['from'] = array(
     '#type' => 'item',
     '#title' => 'Informations',
-    '#description' => t('Les coordonnés latitude longitude égaux à 0 ne sont pas exportées. Si les coordonnés sont différents de zéro, l\'information de commune n\'est pas exportée.'),
+    '#description' => t('Les coordonnés latitude longitude nuls ne sont pas exportés si le code commune existe. Si les coordonnés latitude longitude sont différents de zéro, l\'information de commune n\'est pas exportée.'),
   );
   $form['filter'] = array(
     '#type' => 'fieldset',
