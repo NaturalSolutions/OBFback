@@ -110,7 +110,8 @@ function _export_observation_list_form($form, &$form_state){
     array('data' => t('Observation ID'),'field' => 'nid'),
     t('cd_nom'),
     array('data' => t('timestamp'),'field' => 'field_observation_timestamp_value'),
-    t('latlong'),
+    t('latitude'),
+    t('longitude'),
     array('data' => t('departement'),'field' => 'field_observation_code_dept_value'),
     array('data' => t('commune'),'field' => 'field_code_commune_value'),
     array('data' => t('email'),'field' => 'mail'),
@@ -189,13 +190,17 @@ function _export_observation_list_form($form, &$form_state){
         $uris[$i] = '<img src='.image_style_url("thumbnail",$uris[$i]).' alt="thumbnail" />';
       }
     }
+    if(!empty($ord->field_lat_long_value)){
+      $coords = explode("/", $ord->field_lat_long_value);
+    }
 
     // Fill the table rows
     $rows[$k] = array(
       l($ord->nid, 'node/'. $ord->nid),
       $ord->name,
       format_date($ord->field_observation_timestamp_value,'custom','d-M-Y',date_default_timezone()) ,
-      $ord->field_lat_long_value,
+      $coords[0],
+      $coords[1],
       $ord->field_observation_code_dept_value,
       $ord->field_code_commune_value,
       $ord->mail,
@@ -231,7 +236,7 @@ function _export__observation_list_form_reset($form, &$form_state){
 function _export_observation_list_form_export($form, &$form_state){
   $path = 'public://export/observation/export-observation-obfmobile.csv';
   $headerRow = array();
-  $headerRow = array(t('id'),t('cd_nom'), t('timestamp'), t('latlong'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
+  $headerRow = array(t('id'),t('cd_nom'), t('timestamp'), t('latitude'), t('longitude'), t('departement'), t('commune'), t('email'), t('fisrtname'), t('lastname'), t('image 1'), t('image 2'), t('image 3'));
 
   $select = export_observation_query();
 
