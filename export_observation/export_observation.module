@@ -81,9 +81,6 @@ function _export_observation_list_form($form, &$form_state){
       case 'timestamp':
         $order = 'field_observation_timestamp_value';
         break;
-      case 'latlong':
-        $order = 'field_lat_long_value';
-        break;
       case 'departement':
         $order = 'field_observation_code_dept_value';
         break;
